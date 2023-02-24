@@ -3,8 +3,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strings"
+
+	"github.com/projects/gopherdojo-studyroom/kadai1/kenutsunomiya/imgconv"
 )
 
 func main() {
@@ -36,9 +40,25 @@ func main() {
 	}
 }
 
+// TODO: convert all JPG files under the specified dir to PNG files
 func traverseDir(dirPath string) error {
 	// TODO: find the specified dir
 	//       dir not found -> re-prompt an input
 	//       dir found     -> recursively traverse files under dir and convert
-	// TODO: convert all JPG files under the specified dir to PNG files
+	err := filepath.Walk(dirPath, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			if dirErr := traverseDir(path); dirErr != nil {
+				return dirErr
+			}
+		}
+		imgBytes, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return imgconv.JpgToPng(imgBytes)
+	})
+	return err
 }
