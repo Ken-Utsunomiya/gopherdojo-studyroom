@@ -6,12 +6,15 @@ import (
 	"io/fs"
 	"log"
 	"path/filepath"
+
+	"github.com/projects/gopherdojo-studyroom/kadai1/kenutsunomiya/imgconv"
 )
 
 var (
 	dirFlag  string
 	fromFlag string
 	toFlag   string
+	ic       *imgconv.ImageConverter
 )
 
 func init() {
@@ -22,6 +25,15 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	ic = &imgconv.ImageConverter{
+		From: fromFlag,
+		To:   toFlag,
+	}
+
+	if !ic.IsValidConv() {
+		log.Fatalf("Error: from=%s, to=%s is not supported conversion\n", ic.From, ic.To)
+	}
 
 	dirPath := fmt.Sprintf("./%s", dirFlag)
 	if err := walkDir(dirPath); err != nil {
@@ -34,10 +46,10 @@ func walkDir(root string) error {
 		if err != nil {
 			return err
 		}
-
 		// convert image format
-		fmt.Printf("name: %s\n", info.Name())
-
+		if !info.IsDir() && filepath.Ext(path)[1:] == ic.From {
+			return ic.Convert(path)
+		}
 		return nil
 	})
 }
