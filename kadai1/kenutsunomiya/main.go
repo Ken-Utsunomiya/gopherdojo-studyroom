@@ -37,7 +37,7 @@ func main() {
 
 	dirPath := fmt.Sprintf("./%s", dirFlag)
 	if err := walkDir(dirPath); err != nil {
-		log.Fatalf("Error: %v\n", err)
+		log.Fatalf("%v\n", err)
 	}
 }
 

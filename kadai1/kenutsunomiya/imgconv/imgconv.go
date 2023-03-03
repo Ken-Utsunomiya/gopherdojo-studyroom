@@ -1,5 +1,13 @@
 package imgconv
 
+import (
+	"image"
+	"image/jpeg"
+	"image/png"
+	"os"
+	"strings"
+)
+
 var supportExtensions = []string{"jpeg", "jpg", "png"}
 
 type ImageConverter struct {
@@ -8,6 +16,35 @@ type ImageConverter struct {
 }
 
 func (ic *ImageConverter) Convert(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return err
+	}
+
+	newPath := strings.TrimSuffix(path, ic.From) + ic.To
+	new, err := os.Create(newPath)
+	if err != nil {
+		return err
+	}
+	defer new.Close()
+
+	switch ic.To {
+	case "jpg":
+	case "jpeg":
+		if err := jpeg.Encode(new, img, nil); err != nil {
+			return err
+		}
+	case "png":
+		if err := png.Encode(new, img); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
