@@ -1,6 +1,11 @@
 package imgconv
 
-// TODO: implement function that converts JPG to PNG
-func JpgToPng(bytes []byte) error {
+type ImageConverter struct {
+	DirPath string
+	From    string
+	To      string
+}
+
+func (ic *ImageConverter) Convert() error {
 	return nil
 }
