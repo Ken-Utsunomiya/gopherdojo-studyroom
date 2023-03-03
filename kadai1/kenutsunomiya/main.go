@@ -2,6 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"io/fs"
+	"log"
+	"path/filepath"
 )
 
 var (
@@ -18,4 +22,22 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	dirPath := fmt.Sprintf("./%s", dirFlag)
+	if err := walkDir(dirPath); err != nil {
+		log.Fatalf("Error: %v\n", err)
+	}
+}
+
+func walkDir(root string) error {
+	return filepath.WalkDir(root, func(path string, info fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// convert image format
+		fmt.Printf("name: %s\n", info.Name())
+
+		return nil
+	})
 }
