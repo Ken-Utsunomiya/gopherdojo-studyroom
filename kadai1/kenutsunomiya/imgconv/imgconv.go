@@ -45,6 +45,11 @@ func (ic *ImageConverter) Convert(path string) error {
 			return err
 		}
 	}
+
+	if err := os.Remove(path); err != nil {
+		return err
+	}
+
 	return nil
 }
 
