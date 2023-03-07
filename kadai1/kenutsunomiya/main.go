@@ -41,6 +41,7 @@ func main() {
 	}
 }
 
+// traverses all of the files under root directory
 func walkDir(root string) error {
 	return filepath.WalkDir(root, func(path string, info fs.DirEntry, err error) error {
 		if err != nil {

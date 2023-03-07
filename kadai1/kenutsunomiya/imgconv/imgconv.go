@@ -2,19 +2,21 @@ package imgconv
 
 import (
 	"image"
+	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"os"
 	"strings"
 )
 
-var supportExtensions = []string{"jpeg", "jpg", "png"}
+var supportExtensions = []string{"jpeg", "jpg", "png", "gif"}
 
 type ImageConverter struct {
 	From string
 	To   string
 }
 
+// converts the file format at the given path
 func (ic *ImageConverter) Convert(path string) error {
 	f, err := os.Open(path)
 	if err != nil {
@@ -44,6 +46,10 @@ func (ic *ImageConverter) Convert(path string) error {
 		if err := png.Encode(new, img); err != nil {
 			return err
 		}
+	case "gif":
+		if err := gif.Encode(new, img, nil); err != nil {
+			return err
+		}
 	}
 
 	if err := os.Remove(path); err != nil {
@@ -53,6 +59,7 @@ func (ic *ImageConverter) Convert(path string) error {
 	return nil
 }
 
+// checks if flags, from and to, are in both supported extensions
 func (ic *ImageConverter) IsValidConv() bool {
 	res := map[string]bool{"from": false, "to": false}
 	for _, ext := range supportExtensions {
@@ -62,6 +69,9 @@ func (ic *ImageConverter) IsValidConv() bool {
 		if ext == ic.To {
 			res[ic.To] = true
 		}
+		if res[ic.From] && res[ic.To] {
+			return true
+		}
 	}
-	return res[ic.From] && res[ic.To]
+	return false
 }
